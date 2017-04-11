@@ -87,27 +87,15 @@
 
     <input type="submit" class="button" value="Submit" />
 </form>
-      <div class="fab fab__push">
-        <div class="fab__ripple"></div>
-        <img class="fab__image" src="./images/push-off.png" alt="Push Notification" />
-      </div>
+     
     </div>
 
 
-  <!-- JS Files  -->
-  <script type="text/javascript">
-      if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/serviceWorker.js").then(function(registration) {
-        console.log("Service worker enabled");
-    }).catch(function(error) {
-        console.log("Service worker not enabled", error);
-    })
-}
-          
-      </script>
+  
       
-<script src="/serviceWorker.js"></script>
+<script src="serviceWorker.js"></script>
+<script src="scripts.js"></script>
 <script src="menu.js"></script>
-      <script src="jquery-3.2.0.min.js"></script>
+    
   </body>
 </html>
