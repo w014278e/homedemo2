@@ -17,7 +17,7 @@ if(askJack){
             "question": e.target.question.value,
         };
 
-        fetch("https://w014278e.github.io/homedemo2/index.html", {mode: "no-cors", method: "POST", body: contact})
+        fetch("https://w014278e.github.io/homedemo2/feedback.html", {mode: "no-cors", method: "POST", body: contact})
             .then(response => {
                 console.log('hello response!', response);
             }).catch(() => {
