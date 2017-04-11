@@ -1,7 +1,7 @@
-var BASE_PATH = '/dfmdemotest/';
+var BASE_PATH = '/homedemo2/';
 var CACHE_NAME = 'gih-cache-v7';
 var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
-var newsAPIJSON = "http://api.tvmaze.com;
+
 
 
 
@@ -59,77 +59,7 @@ BASE_PATH + 'events.json',
 
 
       
-    // Handle requests for events JSON file
-  } else if (requestURL.pathname === BASE_PATH + 'events.json') {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return fetch(event.request).then(function(networkResponse) {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
-        }).catch(function() {
-          return caches.match(event.request);
-        });
-      })
-    );
-  } else if (requestURL.href === newsAPIJSON) {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return fetch(event.request).then(function(networkResponse) {
-          cache.put(event.request, networkResponse.clone());
-          caches.delete(TEMP_IMAGE_CACHE_NAME);
-          return networkResponse;
-        }).catch(function() {
-          return caches.match(event.request);
-        });
-      })
-    );
- 
-  } else if (requestURL.href.includes('http://api.tvmaze.com/schedule?country=:GB&date=:8601')) {
-    event.respondWith(
-      caches.open(TEMP_IMAGE_CACHE_NAME).then(function(cache) {
-        return cache.match(event.request).then(function(cacheResponse) {
-          return cacheResponse||fetch(event.request, {mode: 'no-cors'}).then(function(networkResponse) {
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          }).catch(function() {
-            return cache.match('appimages/news-default.jpg');
-          });
-        });
-      })
-    );
-  
-
-      
-      
-      
-  } else if (
-    CACHED_URLS.includes(requestURL.href) ||
-    CACHED_URLS.includes(requestURL.pathname)
-  ) {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return cache.match(event.request).then(function(response) {
-          return response || fetch(event.request);
-        });
-      })
-    );
-  }
-});
-
-
-self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheName.startsWith('gih-cache') && CACHE_NAME !== cacheName) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
+   
 
 
 
