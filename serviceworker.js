@@ -1,10 +1,6 @@
 var BASE_PATH = '/homedemo2/';
-var CACHE_NAME = 'gih-cache-v11';
+var CACHE_NAME = 'gih-cache-v10';
 var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
-var currentCache = {
-  offline: 'offline-cache' + CACHE_NAME
-};
-const offlineUrl = 'offline.html';
 
 
 
@@ -62,37 +58,32 @@ BASE_PATH + 'events.json',
 
 ];
 
-this.addEventListener('install', event => {
+self.addEventListener('install', function(event) {
+	var offlineRequest = new Request('offline.html');
   event.waitUntil(
-    caches.open(currentCache.offline).then(function(cache) {
-      return cache.addAll([
-          
-          offlineUrl
-      ]);
+    fetch(offlineRequest).then(function(response) {
+      return caches.open('offline').then(function(cache) {
+        console.log('[oninstall] Cached offline page', response.url);
+        return cache.put(offlineRequest, response);
+      });
     })
   );
 });
 
-this.addEventListener('fetch', event => {
-  // request.mode = navigate isn't supported in all browsers
-  // so include a check for Accept: text/html header.
-  if (event.request.mode === 'navigate' || (event.request.method === 'GET' && event.request.headers.get('accept').includes('text/html'))) {
-        event.respondWith(
-          fetch(event.request.url).catch(error => {
-              // Return the offline page
-              return caches.match(offlineUrl);
-          })
+self.addEventListener('fetch', function(event) {
+	var request = event.request;
+	if (request.method === 'GET') {
+		event.respondWith(
+      fetch(request).catch(function(error) {
+		  console.error(
+          '[onfetch] Failed. Serving cached offline fallback ' +
+          error
+        );
+        return caches.open('offline').then(function(cache) {
+          return cache.match('offline.html');
+        });
+      })
     );
   }
-  else{
-        // Respond with everything else if we can
-        event.respondWith(caches.match(event.request)
-                        .then(function (response) {
-                        return response || fetch(event.request);
-                    })
-            );
-      }
-});
-
-
+  });
 
