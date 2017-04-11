@@ -1,6 +1,6 @@
 var BASE_PATH = '/homedemo2/';
-var CACHE_NAME = 'gih-cache-v12';
-var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
+var CACHE_NAME = 'gih-cache-v13';
+var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v2';
 
 
 
@@ -9,7 +9,7 @@ var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
 
 var CACHED_URLS = [
     // HTML
-    BASE_PATH + 'https://w014278e.github.io/homedemo2/offline.html',
+    BASE_PATH + 'offline.html',
     BASE_PATH + 'feedback.html',
     BASE_PATH + 'search.html',
     
@@ -81,6 +81,16 @@ self.addEventListener('fetch', function(event) {
         } else if (event.request.headers.get('accept').includes('text/html')) {
           return caches.match('offline.html');
         }
+          // Handle requests for Google Maps JavaScript API file
+  } else if (requestURL.href === googleMapsAPIJS) {
+    event.respondWith(
+      fetch(
+        googleMapsAPIJS+'&'+Date.now(),
+        { mode: 'no-cors', cache: 'no-store' }
+      ).catch(function() {
+        return caches.match('offline-map.js');
+      })
+    );
       });
     })
   );
