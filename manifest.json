@@ -1,12 +1,11 @@
 {
  "name": "MyTV",
     "short_name": "MyTV",
-    "description": "An app allowing you to set reminders for your favourite TV shows",
-  "start_url": "./index.html?utm=homescreen",
+    
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#D6751E;",
-  "background_color": "#ffffff;",
+  "theme_color": "#D6751E",
+  "background_color": "#ffffff",
  "icons": [
   {
    "src": "./images/icons/android-icon-36x36.png",
