@@ -2,9 +2,9 @@ var BASE_PATH = '/homedemo2/';
 var CACHE_NAME = 'gih-cache-v8';
 var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
 var currentCache = {
-  offline: 'offline-cache' + cacheVersion
+  offline: 'offline-cache' + CACHE_NAME
 };
-const offlineUrl = 'offline-page.html';
+const offlineUrl = 'offline.html';
 
 
 
@@ -58,22 +58,18 @@ BASE_PATH + 'scripts.js',
 BASE_PATH + 'events.json',
 
 
+];
 
 this.addEventListener('install', event => {
   event.waitUntil(
     caches.open(currentCache.offline).then(function(cache) {
       return cache.addAll([
-          './img/offline.svg',
+          
           offlineUrl
       ]);
     })
   );
 });
- 
-
-
-    
-];
 
 this.addEventListener('fetch', event => {
   // request.mode = navigate isn't supported in all browsers
@@ -95,12 +91,4 @@ this.addEventListener('fetch', event => {
             );
       }
 });
-
-
-      
-   
-
-
-
-
 
