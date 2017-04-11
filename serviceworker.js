@@ -1,5 +1,5 @@
 var BASE_PATH = '/homedemo2/';
-var CACHE_NAME = 'gih-cache-v9';
+var CACHE_NAME = 'gih-cache-v10';
 var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
 
 
