@@ -9,7 +9,7 @@ var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
 
 var CACHED_URLS = [
     // HTML
-    BASE_PATH + 'offline.html',
+    BASE_PATH + 'https://w014278e.github.io/homedemo2/offline.html',
     BASE_PATH + 'feedback.html',
     BASE_PATH + 'search.html',
     
@@ -64,6 +64,7 @@ BASE_PATH + 'events.json',
 var googleMapsAPIJS = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAXz09zuqWvBhMN5RPC6JYeUWk7FMiDHP4&callback=initMap';
 
 self.addEventListener('install', function(event) {
+  // Cache everything in CACHED_URLS. Installation will fail if something fails to cache
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.addAll(CACHED_URLS);
@@ -90,7 +91,7 @@ self.addEventListener('activate', function(event) {
     caches.keys().then(function(cacheNames) {
       return Promise.all(
         cacheNames.map(function(cacheName) {
-          if (CACHE_NAME !== cacheName && cacheName.startsWith('gih-cache')) {
+          if (cacheName.startsWith('gih-cache') && CACHE_NAME !== cacheName) {
             return caches.delete(cacheName);
           }
         })
@@ -98,3 +99,4 @@ self.addEventListener('activate', function(event) {
     })
   );
 });
+
