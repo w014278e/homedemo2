@@ -12,7 +12,7 @@ if(eventsContainer){
     fetch("events.json")
         .then(response => {
             return response.json();
-        })
+        
 		 eventsContainer.innerHTML = eventsHTML;
         });
 }
