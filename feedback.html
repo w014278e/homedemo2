@@ -75,26 +75,27 @@
     <h1>Feedback</h1>
         <p id="feedback">We would love to hear back from you to tell us about your experience of using this web app</p>
     </div>
-   <form id="askJackForm">
-              <p>
-                <label for="name">Name: </label>
-                <input name="name" />
-              </p>
-
-              <p>
-                <label for="email">Email: </label>
-                <input name="email" type="email" />
-              </p>
-
-              <p>
-                <label for="question">Question: </label>
-                <input name="question" />
-              </p>
-
-              <p>
-                <input type="submit" value="Ask" />
-              </p>
-            </form>
+    
+    <form id="contactForm" action="contact.php" method="POST">
+  <div class="field">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name">
+  </div>
+  <div class="field">
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email">
+  </div>
+  <div class="field">
+    <label for="message">Message</label>
+    <textarea name="message" id="message"></textarea>
+  </div>
+  <div class="field">
+    <input type="submit" value="send">
+  </div>
+</form>
+    
+   
+ 
      
     </div>
 
