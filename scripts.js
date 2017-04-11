@@ -7,7 +7,16 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-const askJack = document.getElementById("askJackForm");
+const eventsContainer = document.getElementById('schedule');
+if(eventsContainer){
+    fetch("events.json")
+        .then(response => {
+            return response.json();
+        })
+        });
+}
+
+const askJack = document.getElementById('askJackForm');
 if(askJack){
     const askJackFormSubmit = e => {
         e.preventDefault();
