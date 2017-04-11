@@ -1,5 +1,5 @@
 var BASE_PATH = '/homedemo2/';
-var CACHE_NAME = 'gih-cache-v11';
+var CACHE_NAME = 'gih-cache-v12';
 var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
 
 
@@ -64,7 +64,6 @@ BASE_PATH + 'events.json',
 var googleMapsAPIJS = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAXz09zuqWvBhMN5RPC6JYeUWk7FMiDHP4&callback=initMap';
 
 self.addEventListener('install', function(event) {
-  // Cache everything in CACHED_URLS. Installation fails if anything fails to cache
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.addAll(CACHED_URLS);
@@ -82,6 +81,20 @@ self.addEventListener('fetch', function(event) {
           return caches.match('offline.html');
         }
       });
+    })
+  );
+});
+
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          if (CACHE_NAME !== cacheName && cacheName.startsWith('gih-cache')) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
     })
   );
 });
