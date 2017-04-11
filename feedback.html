@@ -75,18 +75,26 @@
     <h1>Feedback</h1>
         <p id="feedback">We would love to hear back from you to tell us about your experience of using this web app</p>
     </div>
-   <form id="feedbackForm" method="post" action="">
-    <label>Name:</label>
-    <input type="text" name="name" id="name" class="storeData" value="" />
+   <form id="askJackForm">
+              <p>
+                <label for="name">Name: </label>
+                <input name="name" />
+              </p>
 
-    <label>Email:</label>
-    <input type="email" name="email" id="email" class="storeData" value="" />
+              <p>
+                <label for="email">Email: </label>
+                <input name="email" type="email" />
+              </p>
 
-    <label>Response:</label>
-    <textarea name="message" id="message" class="storedData"></textarea>
+              <p>
+                <label for="question">Question: </label>
+                <input name="question" />
+              </p>
 
-    <input type="submit" class="button" value="Submit" />
-</form>
+              <p>
+                <input type="submit" value="Ask" />
+              </p>
+            </form>
      
     </div>
 
