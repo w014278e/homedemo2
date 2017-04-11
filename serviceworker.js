@@ -1,5 +1,5 @@
 var BASE_PATH = '/homedemo2/';
-var CACHE_NAME = 'gih-cache-v10';
+var CACHE_NAME = 'gih-cache-v11';
 var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
 
 
@@ -9,8 +9,10 @@ var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
 
 var CACHED_URLS = [
     // HTML
+    BASE_PATH + 'offline.html',
     BASE_PATH + 'feedback.html',
-    BASE_PATH + 'shows.html',
+    BASE_PATH + 'search.html',
+    
 	
     
     // Images for favicons
@@ -23,7 +25,7 @@ var CACHED_URLS = [
     BASE_PATH + 'images/icons/favicon-32x32.png',
 
     //Images for page
-   
+   BASE_PATH + 'images/offlinemap.jpg',
     BASE_PATH + 'images/icons/favicon.ico',
     BASE_PATH + 'images/icons/favicon-16x16.png',
     BASE_PATH + 'images/icons/favicon-32x32.png',
@@ -46,6 +48,7 @@ var CACHED_URLS = [
     // JavaScript
     
     BASE_PATH + 'material.js',
+    BASE_PATH + 'offline-map.js',
     // Manifest
     BASE_PATH + 'manifest.json',
   // CSS and fonts
@@ -58,32 +61,27 @@ BASE_PATH + 'events.json',
 
 ];
 
+var googleMapsAPIJS = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAXz09zuqWvBhMN5RPC6JYeUWk7FMiDHP4&callback=initMap';
+
 self.addEventListener('install', function(event) {
-	var offlineRequest = new Request('offline.html');
+  // Cache everything in CACHED_URLS. Installation fails if anything fails to cache
   event.waitUntil(
-    fetch(offlineRequest).then(function(response) {
-      return caches.open('offline').then(function(cache) {
-        console.log('[oninstall] Cached offline page', response.url);
-        return cache.put(offlineRequest, response);
-      });
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll(CACHED_URLS);
     })
   );
 });
 
 self.addEventListener('fetch', function(event) {
-	var request = event.request;
-	if (request.method === 'GET') {
-		event.respondWith(
-      fetch(request).catch(function(error) {
-		  console.error(
-          '[onfetch] Failed. Serving cached offline fallback ' +
-          error
-        );
-        return caches.open('offline').then(function(cache) {
-          return cache.match('offline.html');
-        });
-      })
-    );
-  }
-  });
-
+  event.respondWith(
+    fetch(event.request).catch(function() {
+      return caches.match(event.request).then(function(response) {
+        if (response) {
+          return response;
+        } else if (event.request.headers.get('accept').includes('text/html')) {
+          return caches.match('offline.html');
+        }
+      });
+    })
+  );
+});
