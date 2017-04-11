@@ -7,25 +7,32 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-window.onload = function() {
+const askJack = document.getElementById("askJackForm");
+if(askJack){
+    const askJackFormSubmit = e => {
+        e.preventDefault();
+        const contact = {
+            "name": e.target.name.value,
+            "email": e.target.email.value,
+            "question": e.target.question.value,
+        };
 
-  // Check for LocalStorage support.
-  if (localStorage) {
+        fetch("https://w014278e.github.io/homedemo2/index.html", {mode: "no-cors", method: "POST", body: contact})
+            .then(response => {
+                console.log('hello response!', response);
+            }).catch(() => {
+                let allContacts = [];
 
-    // Add an event listener for form submissions
-    document.getElementById('contactForm').addEventListener('submit', function() {
-      // Get the value of the name field.
-      var name = document.getElementById('name').value;
-	  var email = document.getElementById('email').value;
-	  var message = document.getElementById('message').value;
+                const existingContacts = localStorage.getItem('contact');
+                if(existingContacts){
+                    allContacts = JSON.parse(existingContacts);
+                }
 
-      // Save the name in localStorage.
-      localStorage.setItem('name', name);
-	  localStorage.setItem('email', email);
-	  localStorage.setItem('message', message);
-    });
-
-  }
-
+                allContacts.push(contact);
+                localStorage.setItem('contact', JSON.stringify(allContacts));
+            });
+    };
+    askJack.addEventListener('submit', askJackFormSubmit, false);
 }
+
 
