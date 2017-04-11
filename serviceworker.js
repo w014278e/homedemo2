@@ -11,7 +11,7 @@ var CACHED_URLS = [
     // HTML
     BASE_PATH + 'feedback.html',
     BASE_PATH + 'shows.html',
-	BASE_PATH + 'offline.html',
+	
     
     // Images for favicons
     BASE_PATH + 'images/icons/android-icon-36x36.png',
