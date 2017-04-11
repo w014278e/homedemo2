@@ -7,63 +7,17 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-
-const eventsContainer = document.getElementById('events');
+const eventsContainer = document.getElementById('schedule');
 if(eventsContainer){
     fetch("events.json")
         .then(response => {
             return response.json();
-        }).then(events => {
-            const eventsHTML = events.map(event => {
-                return `<div class="mdl-cell mdl-card mdl-shadow--4dp portfolio-card">
-                    <div class="mdl-card__media">
-                        <img class="article-image" src="${event.picture}" border="0" alt="">
-                    </div>
-                    <div class="mdl-card__title">
-                        <h2 class="mdl-card__title-text">${event.heading}</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        ${event.text}
-                    </div>
-                    <div class="mdl-card__actions mdl-card--border">
-                        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-button--accent" href="${event.link}" data-upgraded=",MaterialButton,MaterialRipple">Read more<span class="mdl-button__ripple-container"><span class="mdl-ripple"></span></span></a>
-                    </div>
-                </div>`;
-            }).join("\n");
-            
-            eventsContainer.innerHTML = eventsHTML;
+        
+		 eventsContainer.innerHTML = eventsHTML;
         });
 }
 
-// For second page
-const newsContainer = document.getElementById('news');
-if(newsContainer){
-    fetch("http://api.tvmaze.com/schedule?country=GB&date=2017-04-04")
-        .then(response => {
-            return response.json();
-        }).then(news => {
-            const newsHTML = news.articles.map(article => {
-                return `<div class="mdl-cell mdl-card mdl-shadow--4dp portfolio-card">
-                    <div class="mdl-card__media">
-                        <img class="article-image" src="${article.urlToImage}" border="0" alt="">
-                    </div>
-                    <div class="mdl-card__title">
-                        <h2 class="mdl-card__title-text">${article.title}</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        ${article.description}
-                    </div>
-                    <div class="mdl-card__actions mdl-card--border">
-                        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-button--accent" href="${article.url}" data-upgraded=",MaterialButton,MaterialRipple">Read more<span class="mdl-button__ripple-container"><span class="mdl-ripple"></span></span></a>
-                    </div>
-                </div>`;
-            }).join("\n");
-            
-            newsContainer.innerHTML = newsHTML;
-        });
-}
-
-const askJack = document.getElementById("askJackForm");
+const askJack = document.getElementById('askJackForm');
 if(askJack){
     const askJackFormSubmit = e => {
         e.preventDefault();
@@ -73,7 +27,7 @@ if(askJack){
             "question": e.target.question.value,
         };
 
-        fetch("https://w014278e.github.io/homedemo2/index.html", {mode: "no-cors", method: "POST", body: contact})
+        fetch('https://w014278e.github.io/homedemo2/feedback.html', {mode: "no-cors", method: "POST", body: contact})
             .then(response => {
                 console.log('hello response!', response);
             }).catch(() => {
@@ -90,3 +44,5 @@ if(askJack){
     };
     askJack.addEventListener('submit', askJackFormSubmit, false);
 }
+
+

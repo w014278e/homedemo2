@@ -1,7 +1,6 @@
 var BASE_PATH = '/homedemo2/';
-var CACHE_NAME = 'gih-cache-v14';
-var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v2';
-var newsAPIJSON = "http://api.tvmaze.com/schedule?country=GB&date=2017-04-04";
+var CACHE_NAME = 'gih-cache-v15';
+var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
 
 
 
@@ -10,10 +9,8 @@ var newsAPIJSON = "http://api.tvmaze.com/schedule?country=GB&date=2017-04-04";
 
 var CACHED_URLS = [
     // HTML
-    BASE_PATH + 'offline.html',
     BASE_PATH + 'feedback.html',
-    BASE_PATH + 'search.html',
-    
+    BASE_PATH + 'shows.html',
 	
     
     // Images for favicons
@@ -26,7 +23,7 @@ var CACHED_URLS = [
     BASE_PATH + 'images/icons/favicon-32x32.png',
 
     //Images for page
-   BASE_PATH + 'images/offlinemap.jpg',
+   
     BASE_PATH + 'images/icons/favicon.ico',
     BASE_PATH + 'images/icons/favicon-16x16.png',
     BASE_PATH + 'images/icons/favicon-32x32.png',
@@ -49,7 +46,6 @@ var CACHED_URLS = [
     // JavaScript
     
     BASE_PATH + 'material.js',
-    BASE_PATH + 'offline-map.js',
     // Manifest
     BASE_PATH + 'manifest.json',
   // CSS and fonts
@@ -62,128 +58,32 @@ BASE_PATH + 'events.json',
 
 ];
 
-var googleMapsAPIJS = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAXz09zuqWvBhMN5RPC6JYeUWk7FMiDHP4&callback=initMap';
-
 self.addEventListener('install', function(event) {
-  // Cache everything in CACHED_URLS. Installation fails if anything fails to cache
+	var offlineRequest = new Request('offline.html');
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(CACHED_URLS);
+    fetch(offlineRequest).then(function(response) {
+      return caches.open('offline').then(function(cache) {
+        console.log('[oninstall] Cached offline page', response.url);
+        return cache.put(offlineRequest, response);
+      });
     })
   );
 });
 
 self.addEventListener('fetch', function(event) {
-  var requestURL = new URL(event.request.url);
-  // Handle requests for index.html
-  if (requestURL.pathname === BASE_PATH + 'index.html') {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return cache.match('index.html').then(function(cachedResponse) {
-          var fetchPromise = fetch('index.html').then(function(networkResponse) {
-            cache.put('index.html', networkResponse.clone());
-            return networkResponse;
-          });
-          return cachedResponse || fetchPromise;
-        });
-      })
-    );
-       } else if (requestURL.pathname === BASE_PATH + 'offline.html') {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return cache.match('offline.html').then(function(cachedResponse) {
-          var fetchPromise = fetch('offline.html').then(function(networkResponse) {
-            cache.put('offline.html', networkResponse.clone());
-            return networkResponse;
-          });
-          return cachedResponse || fetchPromise;
-        });
-      })
-    );
-
-      
- // Handle requests for Google Maps JavaScript API file
-  } else if (requestURL.href === googleMapsAPIJS) {
-    event.respondWith(
-      fetch(
-        googleMapsAPIJS+'&'+Date.now(),
-        { mode: 'no-cors', cache: 'no-store' }
-      ).catch(function() {
-        return caches.match('offline-map.js');
-      })
-    );
-      
-    // Handle requests for events JSON file
-  } else if (requestURL.pathname === BASE_PATH + 'events.json') {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return fetch(event.request).then(function(networkResponse) {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
-        }).catch(function() {
-          return caches.match(event.request);
-        });
-      })
-    );
-  } else if (requestURL.href === newsAPIJSON) {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return fetch(event.request).then(function(networkResponse) {
-          cache.put(event.request, networkResponse.clone());
-          caches.delete(TEMP_IMAGE_CACHE_NAME);
-          return networkResponse;
-        }).catch(function() {
-          return caches.match(event.request);
-        });
-      })
-    );
-  // Handle requests for event images.
-  } else if (requestURL.pathname.includes('/eventsimages/')) {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return cache.match(event.request).then(function(cacheResponse) {
-          return cacheResponse||fetch(event.request).then(function(networkResponse) {
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          }).catch(function() {
-            return cache.match('appimages/event-default.png');
-          });
-        });
-      })
-    );
-  // 
-  }
-  
-
-      
-      
-      
-  } else if (
-    CACHED_URLS.includes(requestURL.href) ||
-    CACHED_URLS.includes(requestURL.pathname)
-  ) {
-    event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return cache.match(event.request).then(function(response) {
-          return response || fetch(event.request);
+	var request = event.request;
+	if (request.method === 'GET') {
+		event.respondWith(
+      fetch(request).catch(function(error) {
+		  console.error(
+          '[onfetch] Failed. Serving cached offline fallback ' +
+          error
+        );
+        return caches.open('offline').then(function(cache) {
+          return cache.match('offline.html');
         });
       })
     );
   }
-});
-
-
-self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheName.startsWith('gih-cache') && CACHE_NAME !== cacheName) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
+  });
 
