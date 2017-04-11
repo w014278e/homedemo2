@@ -1,10 +1,8 @@
 var BASE_PATH = '/homedemo2/';
-var CACHE_NAME = 'gih-cache-v8';
+var CACHE_NAME = 'gih-cache-v9';
 var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
-var currentCache = {
-  offline: 'offline-cache' + CACHE_NAME
-};
-const offlineUrl = 'offline.html';
+var OFFLINE_URL = 'offline.html';
+
 
 
 
@@ -60,35 +58,69 @@ BASE_PATH + 'events.json',
 
 ];
 
-this.addEventListener('install', event => {
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(currentCache.offline).then(function(cache) {
-      return cache.addAll([
-          
-          offlineUrl
-      ]);
+    // We can't use cache.add() here, since we want OFFLINE_URL to be the cache key, but
+    // the actual URL we end up requesting might include a cache-busting parameter.
+    fetch(createCacheBustedRequest(OFFLINE_URL)).then(function(response) {
+      return caches.open(CURRENT_CACHES.offline).then(function(cache) {
+        return cache.put(OFFLINE_URL, response);
+      });
     })
   );
 });
 
-this.addEventListener('fetch', event => {
-  // request.mode = navigate isn't supported in all browsers
-  // so include a check for Accept: text/html header.
-  if (event.request.mode === 'navigate' || (event.request.method === 'GET' && event.request.headers.get('accept').includes('text/html'))) {
-        event.respondWith(
-          fetch(event.request.url).catch(error => {
-              // Return the offline page
-              return caches.match(offlineUrl);
-          })
+self.addEventListener('activate', event => {
+  // Delete all caches that aren't named in CURRENT_CACHES.
+  // While there is only one cache in this example, the same logic will handle the case where
+  // there are multiple versioned caches.
+  let expectedCacheNames = Object.keys(CACHED_URLS).map(function(key) {
+    return CACHED_URLS[key];
+  });
+
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (expectedCacheNames.indexOf(cacheName) === -1) {
+            // If this cache name isn't present in the array of "expected" cache names,
+            // then delete it.
+            console.log('Deleting out of date cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+self.addEventListener('fetch', event => {
+  // We only want to call event.respondWith() if this is a navigation request
+  // for an HTML page.
+  // request.mode of 'navigate' is unfortunately not supported in Chrome
+  // versions older than 49, so we need to include a less precise fallback,
+  // which checks for a GET request with an Accept: text/html header.
+  if (event.request.mode === 'navigate' ||
+      (event.request.method === 'GET' &&
+       event.request.headers.get('accept').includes('text/html'))) {
+    console.log('Handling fetch event for', event.request.url);
+    event.respondWith(
+      fetch(event.request).catch(error => {
+        // The catch is only triggered if fetch() throws an exception, which will most likely
+        // happen due to the server being unreachable.
+        // If fetch() returns a valid HTTP response with an response code in the 4xx or 5xx
+        // range, the catch() will NOT be called. If you need custom handling for 4xx or 5xx
+        // errors, see https://github.com/GoogleChrome/samples/tree/gh-pages/service-worker/fallback-response
+        console.log('Fetch failed; returning offline page instead.', error);
+        return caches.match(OFFLINE_URL);
+      })
     );
   }
-  else{
-        // Respond with everything else if we can
-        event.respondWith(caches.match(event.request)
-                        .then(function (response) {
-                        return response || fetch(event.request);
-                    })
-            );
-      }
+
+  // If our if() condition is false, then this fetch handler won't intercept the request.
+  // If there are any other fetch handlers registered, they will get a chance to call
+  // event.respondWith(). If no fetch handlers call event.respondWith(), the request will be
+  // handled by the browser as if there were no service worker involvement.
 });
+
 
