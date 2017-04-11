@@ -7,12 +7,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-var divId = document.getElementById("schedule")
-for(var i=0;i<obj.data.length;i++)
-for(var keys in obj.data[i]){
- console.log(keys +"-->"+obj.data[i][keys]);
- divId.innerHTML = divId.innerHTML + "<br/>"+ keys +"-->"+obj.data[i][keys];
-}
+
 
 const askJack = document.getElementById('askJackForm');
 if(askJack){
