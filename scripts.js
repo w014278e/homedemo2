@@ -14,7 +14,7 @@ if(eventsContainer){
             return response.json();
         
 		 eventsContainer.innerHTML = eventsHTML;
-        });
+    
 }
 
 const askJack = document.getElementById('askJackForm');
