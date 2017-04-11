@@ -1,6 +1,10 @@
 var BASE_PATH = '/homedemo2/';
-var CACHE_NAME = 'gih-cache-v7';
+var CACHE_NAME = 'gih-cache-v8';
 var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
+var currentCache = {
+  offline: 'offline-cache' + cacheVersion
+};
+const offlineUrl = 'offline-page.html';
 
 
 
@@ -9,6 +13,7 @@ var CACHED_URLS = [
     // HTML
     BASE_PATH + 'feedback.html',
     BASE_PATH + 'shows.html',
+	BASE_PATH + 'offline.html',
     
     // Images for favicons
     BASE_PATH + 'images/icons/android-icon-36x36.png',
@@ -51,11 +56,45 @@ var CACHED_URLS = [
     BASE_PATH + 'styles.css',
 BASE_PATH + 'scripts.js',
 BASE_PATH + 'events.json',
+
+
+
+this.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(currentCache.offline).then(function(cache) {
+      return cache.addAll([
+          './img/offline.svg',
+          offlineUrl
+      ]);
+    })
+  );
+});
  
 
 
     
 ];
+
+this.addEventListener('fetch', event => {
+  // request.mode = navigate isn't supported in all browsers
+  // so include a check for Accept: text/html header.
+  if (event.request.mode === 'navigate' || (event.request.method === 'GET' && event.request.headers.get('accept').includes('text/html'))) {
+        event.respondWith(
+          fetch(event.request.url).catch(error => {
+              // Return the offline page
+              return caches.match(offlineUrl);
+          })
+    );
+  }
+  else{
+        // Respond with everything else if we can
+        event.respondWith(caches.match(event.request)
+                        .then(function (response) {
+                        return response || fetch(event.request);
+                    })
+            );
+      }
+});
 
 
       
