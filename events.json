@@ -1,4 +1,4 @@
-[
+var obj = {"data": [
     {
         "picture": "eventsimages/example-work01.jpg",
         "heading": "From JSON Blog template",

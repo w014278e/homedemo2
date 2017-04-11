@@ -7,14 +7,11 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-const eventsContainer = document.getElementById('schedule');
-if(eventsContainer){
-    fetch("events.json")
-        .then(response => {
-            return response.json();
-        
-		 eventsContainer.innerHTML = eventsHTML;
-    
+var divId = document.getElementById("schedule")
+for(var i=0;i<obj.data.length;i++)
+for(var keys in obj.data[i]){
+ console.log(keys +"-->"+obj.data[i][keys]);
+ divId.innerHTML = divId.innerHTML + "<br/>"+ keys +"-->"+obj.data[i][keys];
 }
 
 const askJack = document.getElementById('askJackForm');
